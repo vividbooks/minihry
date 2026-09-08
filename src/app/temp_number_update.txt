@@ -1,0 +1,7 @@
+Musím najít a opravit aktivitu 'click' v NumberRecognitionGame.tsx:
+
+1. Odstranit popisky: "Klikni 4x pro vytvoření srdce" a "Už máš: 4"
+2. Rozšířit klikací oblast na celý kontejner (w-full h-full)
+3. Zmenšit velikost emoji objektů pro lepší poměr
+
+Problém: soubor je příliš dlouhý a nenašel jsem přesnou pozici aktivity 'click'

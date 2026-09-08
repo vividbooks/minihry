@@ -1,0 +1,48 @@
+// Konstanty pro TilingGrid komponentu
+
+export const GRID_CONSTANTS = {
+  PADDING: 24,
+  CELL_SIZE: {
+    MIN: 40,
+    MAX: 75
+  },
+  MOBILE_BREAKPOINT: 1024,
+  VIEWPORT: {
+    MOBILE_WIDTH_RATIO: 0.85,
+    MOBILE_HEIGHT_RATIO: 0.6,
+    DESKTOP_WIDTH_RATIO: 0.85,
+    DESKTOP_HEIGHT_RATIO: 0.85,
+    DESKTOP_PANEL_WIDTH_RATIO: 0.3,
+    MAX_PANEL_WIDTH: 400,
+    MARGIN: 48,
+    HEADER_HEIGHT: 120,
+    MOBILE_MARGIN: 24
+  },
+  PREVIEW_COLORS: {
+    VALID: 'rgba(76, 175, 80, 0.7)',
+    INVALID: 'rgba(255, 77, 109, 0.7)',
+    VALID_BORDER: '#4CAF50',
+    INVALID_BORDER: '#FF4D6D'
+  },
+  TIMEOUTS: {
+    INVALID_DROP_DISPLAY: 1500
+  },
+  Z_INDEX: {
+    GRID_LINES: 1,
+    TILE_BACKGROUND: 3,
+    TILE_BORDER: 4,
+    TILE_DASHED: 5,
+    HOVER_PREVIEW: 10
+  },
+  TILE_OFFSET: {
+    BACKGROUND: 1,
+    BORDER: 2
+  },
+  DASHED_LINE: {
+    LENGTH: 3,
+    GAP: 3,
+    OFFSET_RATIO: 0.25,
+    SIZE_RATIO: 0.5,
+    WIDTH: 2
+  }
+} as const;

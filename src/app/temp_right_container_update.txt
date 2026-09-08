@@ -1,0 +1,3 @@
+Potřebuji najít pravý kontejner v renderTask funkci a změnit mu pozadí na bílé.
+Ve funkci renderTask je návratová hodnota která obsahuje div s className včetně pozadí.
+Musím najít return statement této funkce a změnit bg-[#4e5871] na bg-white.

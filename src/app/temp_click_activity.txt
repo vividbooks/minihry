@@ -1,0 +1,1 @@
+Hledám aktivitu 'click' v NumberRecognitionGame.tsx - potřebuji najít kód pro naklikávání na oblast
