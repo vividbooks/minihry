@@ -13,7 +13,7 @@ function overlayQrSize(): number {
   return Math.round(Math.min(window.innerWidth * 0.8, window.innerHeight * 0.68, 620));
 }
 
-function ShareQrOverlay({ url, onClose }: { url: string; onClose: () => void }) {
+export function ShareQrOverlay({ url, onClose }: { url: string; onClose: () => void }) {
   const [qrSize, setQrSize] = useState(overlayQrSize);
 
   useEffect(() => {

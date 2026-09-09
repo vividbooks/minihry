@@ -9,9 +9,9 @@ import { Checkbox } from './ui/checkbox';
 import { Slider } from './ui/slider';
 import { Switch } from './ui/switch';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
-import { X, Copy, Play, RotateCcw, ExternalLink, ChevronDown, ChevronRight, Settings2 } from 'lucide-react';
+import { X, Copy, Play, RotateCcw, ExternalLink, ChevronDown, ChevronRight, Settings2, QrCode } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
-import { ShareConfigQr } from './ShareConfigQr';
+import { ShareConfigQr, ShareQrOverlay } from './ShareConfigQr';
 
 interface GameConfiguratorProps {
   gameId: GameType;
@@ -104,6 +104,7 @@ export function GameConfigurator({ gameId, onBack, onPlayGame }: GameConfigurato
   const [generatedUrl, setGeneratedUrl] = useState<string>('');
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isQrOpen, setIsQrOpen] = useState(false);
 
   // Inicializace defaultních hodnot
   useEffect(() => {
@@ -442,17 +443,30 @@ export function GameConfigurator({ gameId, onBack, onPlayGame }: GameConfigurato
           </p>
         </div>
 
-        {/* Tlačítko "Hrát s tímto nastavením" */}
-        <div className="mb-6">
-          <Button 
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row">
+          <Button
             onClick={handlePlayGame}
-            className="w-full bg-green-600 hover:bg-green-700 text-white text-xl py-8 rounded-3xl shadow-xl border-4 border-white/30 hover:scale-105 transition-all duration-200"
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xl py-8 rounded-3xl shadow-xl border-4 border-white/30 hover:scale-105 transition-all duration-200"
             size="lg"
           >
             <Play className="w-6 h-6 mr-3" />
             Hrát s tímto nastavením
           </Button>
+          <Button
+            type="button"
+            onClick={() => setIsQrOpen(true)}
+            disabled={!generatedUrl}
+            variant="outline"
+            className="sm:min-w-[13rem] bg-white text-blue-700 border-4 border-blue-200 hover:bg-blue-50 text-xl py-8 rounded-3xl shadow-xl hover:scale-105 transition-all duration-200"
+            size="lg"
+          >
+            <QrCode className="w-6 h-6 mr-3" />
+            Zobrazit QR kód
+          </Button>
         </div>
+        {isQrOpen && generatedUrl ? (
+          <ShareQrOverlay url={generatedUrl} onClose={() => setIsQrOpen(false)} />
+        ) : null}
 
         <div className="space-y-6 pb-8">
           {/* 1. Nastavení hry */}
