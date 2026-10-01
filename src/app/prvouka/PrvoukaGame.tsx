@@ -244,6 +244,7 @@ function SortView({ question, options, illustrations, locked, onAnswer }: { ques
   const boxRefs = useRef(new Map<string, HTMLDivElement>());
   const boxSize = isMobile ? (options.length > 2 ? 104 : 140) : options.length > 2 ? 230 : 260;
   const cardSize = isMobile ? 130 : 230;
+  const labelLength = Math.max(...options.flatMap((option) => option.label.split(' ').map((word) => word.length)));
 
   const choose = (option: PrvoukaChoiceOption) => {
     if (locked || target) return;
@@ -289,6 +290,7 @@ function SortView({ question, options, illustrations, locked, onAnswer }: { ques
               size={boxSize}
               onClick={() => choose(option)}
               isHighlighted={target === option.id}
+              labelLength={labelLength}
             />
           </div>
         ))}

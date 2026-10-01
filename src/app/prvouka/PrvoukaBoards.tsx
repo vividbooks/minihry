@@ -156,7 +156,7 @@ function MonthWheel({ states, onTap, disabled }: { states: BoardItemState[]; onT
             }}
           >
             <path d={wedgePath(index, 172, 72)} fill={selected ? palette.back : palette.front} stroke={palette.border} strokeWidth={selected ? 4 : 2.5} />
-            <text x={label.x} y={label.y} fill={selected ? '#fff' : palette.border} fontSize="15" fontWeight="700" textAnchor="middle" dominantBaseline="central" style={{ pointerEvents: 'none' }}>
+            <text x={label.x} y={label.y} fill={selected ? '#fff' : palette.border} fontSize="14" fontWeight="700" textAnchor="middle" dominantBaseline="central" style={{ pointerEvents: 'none' }}>
               {month}
             </text>
           </g>

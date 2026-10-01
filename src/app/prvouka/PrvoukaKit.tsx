@@ -113,8 +113,11 @@ export function PrvoukaBox({
   onClick,
   isHighlighted,
   isWrong,
+  labelLength,
 }: {
   label: string;
+  /** Délka nejdelšího slova ze všech krabic v řadě – ať mají všechny stejně velké písmo. */
+  labelLength?: number;
   palette: BoxPalette;
   size: number;
   onClick?: () => void;
@@ -125,7 +128,7 @@ export function PrvoukaBox({
   const frontHeight = size * 0.75;
   const overlap = size * 0.1;
   const borderWidth = size < 150 ? 2 : size < 200 ? 3 : 4;
-  const longest = Math.max(...label.split(' ').map((word) => word.length));
+  const longest = labelLength ?? Math.max(...label.split(' ').map((word) => word.length));
   const fontSize = Math.min(size * 0.2, (size * 1.5) / Math.max(longest, 4));
   return (
     <motion.div
