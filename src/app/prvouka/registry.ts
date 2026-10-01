@@ -85,8 +85,8 @@ export const PRVOUKA_LANDING_GAMES: PrvoukaLandingGame[] = [
     icon: '🚸',
     bg: '#FFD3C5',
     playBg: '#FFE8ED',
-    image: `${ILLUSTRATIONS}/prvouka-divka-telefon-1300.png`,
-    imagePosition: 'center 12%',
+    image: `${ILLUSTRATIONS}/prvouka-hriste-1300.png`,
+    imagePosition: 'center 40%',
   },
 ];
 
