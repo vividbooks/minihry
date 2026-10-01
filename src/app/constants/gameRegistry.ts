@@ -1,8 +1,9 @@
 import { buildGameShareURL, compactGameSettings, mergeGameSettings } from '../utils/gameShareUrl';
+import { PRVOUKA_LANDING_GAMES, prvoukaGameSettings, type PrvoukaGameType } from '../prvouka/registry';
 
 // Centrální registr všech her a jejich parametrů
 
-export type GameType = 'numberRecognition' | 'numberSequence' | 'patternSequence' | 'mathCrossword' | 'robotNavigation' | 'numberComparison' | 'quantityComparison' | 'mathPractice' | 'mirrorDrawing' | 'tilingGame' | 'dominoGame' | 'moneyExchange' | 'boardGame' | 'mrBall' | 'countingGame' | 'mathSnake' | 'imageReveal' | 'buildNumber';
+export type GameType = 'numberRecognition' | 'numberSequence' | 'patternSequence' | 'mathCrossword' | 'robotNavigation' | 'numberComparison' | 'quantityComparison' | 'mathPractice' | 'mirrorDrawing' | 'tilingGame' | 'dominoGame' | 'moneyExchange' | 'boardGame' | 'mrBall' | 'countingGame' | 'mathSnake' | 'imageReveal' | 'buildNumber' | PrvoukaGameType;
 
 export interface GameConfig {
   id: GameType;
@@ -1173,7 +1174,22 @@ export const GAME_REGISTRY: Record<GameType, GameConfig> = {
     component: 'BuildNumberGame',
     settings: BUILD_NUMBER_SETTINGS,
     previewImage: 'https://jjpiguuubvmiobmixwgh.supabase.co/storage/v1/object/public/Admin%20math/Group%2021337.png'
-  }
+  },
+  // Prvouka – rozcestník /prvouka, data v src/app/prvouka.
+  ...(Object.fromEntries(
+    PRVOUKA_LANDING_GAMES.map((game) => [
+      game.id,
+      {
+        id: game.id,
+        name: game.name,
+        description: game.longDescription,
+        icon: game.icon,
+        component: 'PrvoukaGame',
+        settings: prvoukaGameSettings(game, BACKGROUND_SETTINGS) as GameSettings,
+        previewImage: game.image,
+      },
+    ]),
+  ) as Record<PrvoukaGameType, GameConfig>),
 };
 
 export function getGameDefaultSettings(gameId: GameType): Record<string, unknown> {

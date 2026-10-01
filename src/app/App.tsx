@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { GameType, generateGameURL, resolveSharedGameSettings } from './constants/gameRegistry';
+import { PRVOUKA_LANDING_GAMES } from './prvouka/registry';
 import { parseGameConfigParam } from './utils/gameShareUrl';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AudioManager } from './components/AudioManager';
@@ -18,8 +19,14 @@ const VALID_GAMES = [
   'numberRecognition', 'mathCrossword', 'numberSequence', 'patternSequence', 
   'robotNavigation', 'numberComparison', 'quantityComparison', 'mathPractice', 
   'mirrorDrawing', 'tilingGame', 'dominoGame', 'moneyExchange', 'boardGame', 
-  'mrBall', 'countingGame', 'mathSnake', 'imageReveal'
+  'mrBall', 'countingGame', 'mathSnake', 'imageReveal',
+  // Prvouka (rozcestník /prvouka)
+  'prvoukaZvirata', 'prvoukaOvoce', 'prvoukaHodiny', 'prvoukaRokDen', 'prvoukaBezpecnost'
 ];
+
+/** Rozcestník podle cesty: /prvouka = prvoukové minihry, jinak matematika. */
+const LANDING_SUBJECT: 'math' | 'prvouka' =
+  typeof window !== 'undefined' && window.location.pathname.replace(/\/+$/, '').endsWith('/prvouka') ? 'prvouka' : 'math';
 
 // Enhanced loading component with better timeout handling
 const GameLoader = () => {
@@ -261,7 +268,17 @@ export default function App() {
       mathSnake: () => import('./components/MathSnakeGame').then(module => ({ default: module.MathSnakeGame })),
       imageReveal: () => import('./components/ImageRevealGame').then(module => ({ default: module.default })),
       buildNumber: () => import('./components/BuildNumberGame').then(module => ({ default: module.BuildNumberGame })),
-    };
+      ...Object.fromEntries(
+        PRVOUKA_LANDING_GAMES.map((game) => [
+          game.id,
+          () => import('./prvouka/PrvoukaGame').then((module) => ({
+            default: (props: { settings?: Record<string, any> }) => (
+              <module.PrvoukaGame prvoukaGameId={game.dataId} defaultBackground={game.playBg} {...props} />
+            ),
+          })),
+        ]),
+      ),
+    } as Record<string, () => Promise<{ default: React.ComponentType<any> }>>;
     
     const importFunction = gameComponents[gameId];
     return importFunction ? React.lazy(importFunction) : null;
@@ -408,6 +425,7 @@ export default function App() {
               <Suspense fallback={<SimpleLoader message="Načítám administraci..." />}>
                 <AdminPanel 
                   onConfigureGame={handleConfigureGame}
+                  subject={LANDING_SUBJECT}
                 />
               </Suspense>
             )}
@@ -418,6 +436,7 @@ export default function App() {
                 <Suspense fallback={<SimpleLoader message="Načítám administraci..." />}>
                   <AdminPanel 
                     onConfigureGame={handleConfigureGame}
+                    subject={LANDING_SUBJECT}
                   />
                 </Suspense>
                 

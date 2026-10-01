@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { prvoukaLandingGame } from '../prvouka/registry';
 import { GAME_REGISTRY, GameType, GameSetting, generateGameURL } from '../constants/gameRegistry';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
@@ -22,7 +23,7 @@ interface GameConfiguratorProps {
 // Mapování her na barvy pozadí (podle předdefinovaných speciálních her)
 const getGameBackgroundColor = (gameId: GameType, settings: Record<string, any>) => {
   // Mapování podle barev z AdminPanel dlaždic - VŽDY používáme barvu podle gameId
-  const gameBackgroundColors: Record<GameType, string> = {
+  const gameBackgroundColors: Partial<Record<GameType, string>> = {
     numberRecognition: '#ceeffd',
     dominoGame: '#e6e6e6', 
     numberComparison: '#fcfbdc',
@@ -43,12 +44,12 @@ const getGameBackgroundColor = (gameId: GameType, settings: Record<string, any>)
     buildNumber: '#F5E6D0'
   };
   
-  return gameBackgroundColors[gameId] || '#F5E6D0'; // béžová jako fallback
+  return gameBackgroundColors[gameId] || prvoukaLandingGame(gameId)?.bg || '#F5E6D0'; // béžová jako fallback
 };
 
 // Mapování her na obrázky podle AdminPanel
 const getGameImage = (gameId: GameType): string | null => {
-  const gameImages: Record<GameType, string | null> = {
+  const gameImages: Partial<Record<GameType, string | null>> = {
     numberRecognition: 'https://jjpiguuubvmiobmixwgh.supabase.co/storage/v1/object/public/Admin%20math/nahledy/poznej_cisla.png',
     dominoGame: 'https://jjpiguuubvmiobmixwgh.supabase.co/storage/v1/object/public/Admin%20math/nahledy/domino.png',
     numberComparison: 'https://jjpiguuubvmiobmixwgh.supabase.co/storage/v1/object/public/Admin%20math/nahledy/rozrad_cisla%20(1).png',
@@ -69,12 +70,12 @@ const getGameImage = (gameId: GameType): string | null => {
     buildNumber: 'https://jjpiguuubvmiobmixwgh.supabase.co/storage/v1/object/public/Admin%20math/Group%2021337.png'
   };
   
-  return gameImages[gameId] || null;
+  return gameImages[gameId] || prvoukaLandingGame(gameId)?.image || null;
 };
 
 // Mapování her na popisky podle AdminPanel
 const getGameDescription = (gameId: GameType): string => {
-  const gameDescriptions: Record<GameType, string> = {
+  const gameDescriptions: Partial<Record<GameType, string>> = {
     numberRecognition: 'Děti se seznamují s prvními čísly. Učí se je zapisovat čárkami a tečkami, vyťukávat rytmus nebo je rozpoznávat sluchem.',
     dominoGame: 'Na kostce domina jsou dvě strany – kolik teček chybí a kolik je jich dohromady? Hra rozvíjí první kroky ke sčítání.',
     numberComparison: 'Rychlá hra na čas: určujeme, co je větší a co menší. V pokročilejších úrovních se přidává i sčítání.',
@@ -95,7 +96,7 @@ const getGameDescription = (gameId: GameType): string => {
     buildNumber: 'Skládáme čísla z kostiček'
   };
   
-  return gameDescriptions[gameId] || '';
+  return gameDescriptions[gameId] || prvoukaLandingGame(gameId)?.longDescription || '';
 };
 
 export function GameConfigurator({ gameId, onBack, onPlayGame }: GameConfiguratorProps) {
@@ -229,7 +230,10 @@ export function GameConfigurator({ gameId, onBack, onPlayGame }: GameConfigurato
       'cardTypes',
       
       // Specifické základní nastavení pro quantityComparison
-      'timeBasedGame'
+      'timeBasedGame',
+
+      // Prvouka: ročník, témata a počet úloh
+      'grade', 'topics', 'rounds'
     ];
 
     // Pokud je to základní klíč, není pokročilé

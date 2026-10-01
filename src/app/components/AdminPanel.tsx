@@ -4,10 +4,20 @@ import { Button } from './ui/button';
 import { Settings, Play } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Container5 from '../imports/Container-9188-1388';
+import { PRVOUKA_GAME_GROUPS, prvoukaLandingGame } from '../prvouka/registry';
 
 interface AdminPanelProps {
   onConfigureGame: (gameId: GameType) => void;
+  /** Předmět rozcestníku: matematika (výchozí) nebo prvouka (cesta /prvouka). */
+  subject?: 'math' | 'prvouka';
 }
+
+/** Obálky pracovních učebnic prvouky z knihovny Vividbooks (vějíř v hlavičce). */
+const PRVOUKA_COVERS = [
+  'https://qypiuvqglsmxdsnyazih.supabase.co/storage/v1/object/public/platform-admin/files/assets/768a488e-465d-4735-8640-0a5a8158ea5d-workbook-1-2a82d142-ea68-4724-b00b-87dd9da2f144/image/83fe0e48a283584bcf9aee5e2f0982248f9745d6.png',
+  'https://qypiuvqglsmxdsnyazih.supabase.co/storage/v1/object/public/platform-admin/files/assets/768a488e-465d-4735-8640-0a5a8158ea5d-workbook-21-bd054f3f-04c5-43bd-8ab2-85f19d8c2a1a/image/96dab1b936f3a050e5119c467cb72e88eb8787ae.png',
+  'https://qypiuvqglsmxdsnyazih.supabase.co/storage/v1/object/public/platform-admin/files/assets/768a488e-465d-4735-8640-0a5a8158ea5d-workbook-35-59e12b18-d549-45b8-bb9a-3d979e22ade4/image/d86d66b170e9652b51e2b1c5753a60a23d242268.jpg',
+];
 
 // Lazy loaded image component to prevent blocking - optimized
 const LazyGameImage = React.memo(({ src, alt, className }: { src: string | null, alt: string, className: string }) => {
@@ -43,7 +53,8 @@ const LazyGameImage = React.memo(({ src, alt, className }: { src: string | null,
 
 LazyGameImage.displayName = 'LazyGameImage';
 
-export const AdminPanel = React.memo(({ onConfigureGame }: AdminPanelProps) => {
+export const AdminPanel = React.memo(({ onConfigureGame, subject = 'math' }: AdminPanelProps) => {
+  const isPrvouka = subject === 'prvouka';
   const [selectedGame, setSelectedGame] = useState<GameType | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
@@ -53,7 +64,7 @@ export const AdminPanel = React.memo(({ onConfigureGame }: AdminPanelProps) => {
   };
 
   // Všechny hry v jednom seznamu bez kategorií s PNG náhledy
-  const gameGroups = [
+  const mathGameGroups = [
     {
       title: "Poznávám čísla",
       games: [
@@ -209,6 +220,18 @@ export const AdminPanel = React.memo(({ onConfigureGame }: AdminPanelProps) => {
     }
   ];
 
+  // Prvouka: stejné karty, ilustrace z knihovny Laioutu.
+  const prvoukaGameGroups = PRVOUKA_GAME_GROUPS.map((group) => ({
+    title: group.title,
+    games: group.games
+      .map((id) => prvoukaLandingGame(id))
+      .filter((game): game is NonNullable<typeof game> => Boolean(game))
+      .map((game) => ({ id: game.id, name: game.name, description: game.description, bg: game.bg, image: game.image, emoji: game.icon })),
+  }));
+
+  const gameGroups: Array<{ title: string; games: Array<{ id: string; name: string; description: string; bg: string; image?: string; emoji?: string }> }> =
+    isPrvouka ? prvoukaGameGroups : mathGameGroups;
+
   // Filtrování kategorií podle vybrané kategorie
   const filteredGroups = selectedCategory 
     ? gameGroups.filter(group => group.title === selectedCategory)
@@ -236,7 +259,7 @@ export const AdminPanel = React.memo(({ onConfigureGame }: AdminPanelProps) => {
               
               {/* Main Title */}
               <h2 className="text-3xl md:text-5xl font-bold text-[#09056f] mb-4 md:mb-6 leading-tight">
-                Matematické<br />Minihry
+                {isPrvouka ? <>Minihry<br />prvouky</> : <>Matematické<br />Minihry</>}
               </h2>
               
               {/* Description */}
@@ -245,7 +268,7 @@ export const AdminPanel = React.memo(({ onConfigureGame }: AdminPanelProps) => {
                   Minihry jsou součástí našich pracovních učebnic Vividbooks, ale pro veřejnost je nabízíme zcela zdarma.
                 </p>
                 <p>
-                  👉 Pokud chcete pracovat s <a href="https://www.vividbooks.com/cs/matematika-1-stupen" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-blue-600 transition-colors">ucelenou metodikou</a> pro výuku matematiky, 
+                  👉 Pokud chcete pracovat s <a href={isPrvouka ? 'https://www.vividbooks.com/cs/prvouka' : 'https://www.vividbooks.com/cs/matematika-1-stupen'} target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-blue-600 transition-colors">ucelenou metodikou</a> pro výuku {isPrvouka ? 'prvouky' : 'matematiky'}, 
                   <a href="https://www.vividbooks.com/cs/free-trial-cz" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-blue-600 transition-colors"> vyzkoušejte Vividbooks</a> nebo 
                   <a href="https://eshop.vividbooks.com/" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-blue-600 transition-colors"> si objednejte pracovní učebnice</a>.
                 </p>
@@ -257,7 +280,7 @@ export const AdminPanel = React.memo(({ onConfigureGame }: AdminPanelProps) => {
               {/* Header Buttons */}
               <div className="flex flex-row gap-3 w-full lg:w-auto mb-4">
                 <button className="px-4 md:px-6 py-2 md:py-3 border-2 border-[#4e5871] text-[#4e5871] rounded-lg hover:bg-[#4e5871] hover:text-white transition-colors text-xs md:text-sm">
-                  Matematika: 1. ročník
+                  {isPrvouka ? 'Prvouka: 1. a 2. ročník' : 'Matematika: 1. ročník'}
                 </button>
                 <a 
                   href="https://app.vividbooks.com/" 
@@ -271,6 +294,24 @@ export const AdminPanel = React.memo(({ onConfigureGame }: AdminPanelProps) => {
               </div>
               
               {/* Notebooks Image */}
+              {isPrvouka ? (
+                <div className="mb-4 relative h-72 md:h-80 w-[420px] max-w-full" aria-label="Pracovní učebnice prvouky">
+                  {PRVOUKA_COVERS.map((src, index) => (
+                    <img
+                      key={src}
+                      src={src}
+                      alt=""
+                      className="absolute top-6 h-56 md:h-64 w-auto rounded-md object-contain"
+                      style={{
+                        left: `${index * 30}%`,
+                        transform: `rotate(${[-6, 2, 12][index]}deg) translateY(${[0, 10, 30][index]}px)`,
+                        boxShadow: '0 12px 28px rgba(9,5,111,0.18)',
+                        zIndex: index,
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
               <div className="mb-4">
                 <img 
                   src="https://jjpiguuubvmiobmixwgh.supabase.co/storage/v1/object/public/Admin%20math/Container.png"
@@ -278,6 +319,7 @@ export const AdminPanel = React.memo(({ onConfigureGame }: AdminPanelProps) => {
                   className="h-80 md:h-96 w-auto object-contain"
                 />
               </div>
+              )}
             </div>
           </div>
         </div>
@@ -352,7 +394,7 @@ export const AdminPanel = React.memo(({ onConfigureGame }: AdminPanelProps) => {
                           <LazyGameImage
                             src={game.image}
                             alt={game.name}
-                            className="w-full h-full object-cover rounded-t-3xl"
+                            className={`w-full h-full ${isPrvouka ? 'object-contain p-3' : 'object-cover'} rounded-t-3xl`}
                           />
                         </Suspense>
                       ) : (
