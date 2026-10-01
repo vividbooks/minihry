@@ -62,8 +62,7 @@ export const PRVOUKA_LANDING_GAMES: PrvoukaLandingGame[] = [
     icon: '🕰️',
     bg: '#D0DBFF',
     playBg: '#D0DBFF',
-    image: `${ILLUSTRATIONS}/prvouka-vstava-1300.png`,
-    imagePosition: 'center 30%',
+    image: '/prvouka/hodiny-karta.svg',
   },
   {
     id: 'prvoukaRokDen',
