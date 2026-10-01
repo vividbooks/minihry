@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import type { PrvoukaBoard } from './data/types';
 import { DAY_PARTS, MONTHS, SEASONS, WEEK_DAYS, seasonOfMonth } from './data/games/cas';
-import { BOX_PALETTES, PRVOUKA_COLORS, PrvoukaPictureView, useIsMobile, type BoxPalette } from './PrvoukaKit';
+import { BOX_PALETTES, PRVOUKA_COLORS, PrvoukaPictureView, useDesktopScale, useIsMobile, type BoxPalette } from './PrvoukaKit';
 import type { IllustrationLookup } from './illustrations';
 import type { PrvoukaPicture } from './data/types';
 
@@ -29,17 +29,18 @@ const DAYPART_SKY = [
 
 export function PrvoukaBoardView({ board, states, onTap, disabled, illustrations }: { board: PrvoukaBoard; states: BoardItemState[]; onTap: (index: number) => void; disabled: boolean; illustrations: IllustrationLookup }) {
   const isMobile = useIsMobile();
+  const s = useDesktopScale();
   if (board === 'months') return <MonthWheel states={states} onTap={onTap} disabled={disabled} illustrations={illustrations} />;
 
   if (board === 'seasons') {
     return (
-      <div className="grid w-full" style={{ gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : 'repeat(4, minmax(0, 1fr))', gap: isMobile ? 10 : 20 }}>
+      <div className="grid w-full" style={{ gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : 'repeat(4, minmax(0, 1fr))', gap: isMobile ? 10 : 20 * s }}>
         {SEASONS.map((season, index) => (
-          <CardButton key={season} palette={SEASON_PALETTES[index]} selected={states[index] === 'selected'} onClick={() => onTap(index)} disabled={disabled} height={isMobile ? 140 : 210}>
+          <CardButton key={season} palette={SEASON_PALETTES[index]} selected={states[index] === 'selected'} onClick={() => onTap(index)} disabled={disabled} height={isMobile ? 140 : 210 * s}>
             <span className="flex items-center justify-center rounded-xl bg-white" style={{ padding: 4 }}>
-              <PrvoukaPictureView picture={SEASON_PICTURES[index]} illustrations={illustrations} size={isMobile ? 80 : 130} height={isMobile ? 64 : 110} />
+              <PrvoukaPictureView picture={SEASON_PICTURES[index]} illustrations={illustrations} size={isMobile ? 80 : 130 * s} height={isMobile ? 64 : 110 * s} />
             </span>
-            <span style={{ fontSize: isMobile ? 22 : 30, fontWeight: 700 }}>{season}</span>
+            <span style={{ fontSize: isMobile ? 22 : 30 * s, fontWeight: 700 }}>{season}</span>
           </CardButton>
         ))}
       </div>
@@ -48,7 +49,7 @@ export function PrvoukaBoardView({ board, states, onTap, disabled, illustrations
 
   if (board === 'week') {
     return (
-      <div className="grid w-full" style={{ gridTemplateColumns: isMobile ? 'repeat(4, minmax(0, 1fr))' : 'repeat(7, minmax(0, 1fr))', gap: isMobile ? 8 : 12 }}>
+      <div className="grid w-full" style={{ gridTemplateColumns: isMobile ? 'repeat(4, minmax(0, 1fr))' : 'repeat(7, minmax(0, 1fr))', gap: isMobile ? 8 : 12 * s }}>
         {WEEK_DAYS.map((day, index) => (
           <CardButton
             key={day}
@@ -56,9 +57,9 @@ export function PrvoukaBoardView({ board, states, onTap, disabled, illustrations
             selected={states[index] === 'selected'}
             onClick={() => onTap(index)}
             disabled={disabled}
-            height={isMobile ? 84 : 120}
+            height={isMobile ? 84 : 120 * s}
           >
-            <span style={{ fontSize: isMobile ? 24 : 34, fontWeight: 800, textTransform: 'uppercase' }}>{day.slice(0, 2)}</span>
+            <span style={{ fontSize: isMobile ? 24 : 34 * s, fontWeight: 800, textTransform: 'uppercase' }}>{day.slice(0, 2)}</span>
             {!isMobile ? <span style={{ fontSize: 15, fontWeight: 700 }}>{day}</span> : null}
           </CardButton>
         ))}
@@ -67,7 +68,7 @@ export function PrvoukaBoardView({ board, states, onTap, disabled, illustrations
   }
 
   return (
-    <div className="grid w-full" style={{ gridTemplateColumns: isMobile ? 'repeat(3, minmax(0, 1fr))' : 'repeat(6, minmax(0, 1fr))', gap: isMobile ? 8 : 12 }}>
+    <div className="grid w-full" style={{ gridTemplateColumns: isMobile ? 'repeat(3, minmax(0, 1fr))' : 'repeat(6, minmax(0, 1fr))', gap: isMobile ? 8 : 12 * s }}>
       {DAY_PARTS.map((part, index) => {
         const sky = DAYPART_SKY[index];
         const selected = states[index] === 'selected';
@@ -88,13 +89,13 @@ export function PrvoukaBoardView({ board, states, onTap, disabled, illustrations
               boxShadow: `0 4px 0 ${PRVOUKA_COLORS.CARD_BORDER}`,
             }}
           >
-            <span className="relative block" style={{ height: isMobile ? 60 : 90, background: sky.sky }}>
+            <span className="relative block" style={{ height: isMobile ? 60 : 90 * s, background: sky.sky }}>
               <span
                 className="absolute rounded-full"
-                style={{ left: `${sky.sunX}%`, top: `${sky.sunY}%`, width: isMobile ? 22 : 30, height: isMobile ? 22 : 30, background: sky.sun, transform: 'translate(-50%, -50%)', boxShadow: `0 0 0 6px ${sky.sun}44` }}
+                style={{ left: `${sky.sunX}%`, top: `${sky.sunY}%`, width: isMobile ? 22 : 30 * s, height: isMobile ? 22 : 30 * s, background: sky.sun, transform: 'translate(-50%, -50%)', boxShadow: `0 0 0 6px ${sky.sun}44` }}
               />
             </span>
-            <span style={{ padding: '8px 4px 10px', fontSize: isMobile ? 16 : 20, fontWeight: 700, color: PRVOUKA_COLORS.TEXT, backgroundColor: selected ? '#FFF4E3' : undefined }}>{part}</span>
+            <span style={{ padding: '8px 4px 10px', fontSize: isMobile ? 16 : 20 * s, fontWeight: 700, color: PRVOUKA_COLORS.TEXT, backgroundColor: selected ? '#FFF4E3' : undefined }}>{part}</span>
           </motion.button>
         );
       })}
@@ -145,7 +146,7 @@ function wedgePath(index: number, outer: number, inner: number) {
 /** Kolečko roku: leden nahoře, výseče v barvách ročních období. */
 function MonthWheel({ states, onTap, disabled, illustrations }: { states: BoardItemState[]; onTap: (index: number) => void; disabled: boolean; illustrations: IllustrationLookup }) {
   return (
-    <svg viewBox="0 0 360 360" style={{ width: 'min(100%, 30rem, 56vh)', userSelect: 'none' }} role="group" aria-label="Měsíce v roce">
+    <svg viewBox="0 0 360 360" style={{ width: 'min(100%, 64vh)', userSelect: 'none' }} role="group" aria-label="Měsíce v roce">
       {MONTHS.map((month, index) => {
         const palette = SEASON_PALETTES[seasonOfMonth(index)];
         const selected = states[index] === 'selected';

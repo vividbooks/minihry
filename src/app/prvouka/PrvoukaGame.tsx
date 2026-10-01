@@ -15,6 +15,7 @@ import {
   PrvoukaFeedbackOverlay,
   PrvoukaPictureView,
   PrvoukaProgress,
+  useDesktopScale,
   useIsMobile,
   type BoxPalette,
 } from './PrvoukaKit';
@@ -72,6 +73,7 @@ export function PrvoukaGame({ prvoukaGameId, defaultBackground, settings }: Prvo
   const questions = useMemo(() => (game ? buildRound(game, grade, topics, rounds, seed) : []), [game, grade, topics, rounds, seed]);
   const illustrations = usePrvoukaIllustrations();
   const isMobile = useIsMobile();
+  const s = useDesktopScale();
 
   const [index, setIndex] = useState(0);
   const [lives, setLives] = useState(MAX_LIVES);
@@ -124,18 +126,18 @@ export function PrvoukaGame({ prvoukaGameId, defaultBackground, settings }: Prvo
 
   return (
     <div className="w-full flex flex-col overflow-hidden" style={{ backgroundColor, minHeight: '100svh', color: PRVOUKA_COLORS.TEXT }}>
-      <div className="flex-1 flex flex-col items-center justify-center gap-4 sm:gap-6 p-3 sm:p-6 md:p-8 min-h-0" style={{ paddingTop: isMobile ? 24 : 40 }}>
-        <div className="flex items-center justify-center gap-3 max-w-4xl text-center">
-          <h1 style={{ fontSize: isMobile ? 26 : 40, fontWeight: 700, lineHeight: 1.15, color: PRVOUKA_COLORS.TEXT }}>{question.prompt}</h1>
+      <div className="flex-1 flex flex-col items-center justify-center gap-4 sm:gap-6 p-3 sm:p-6 md:p-8 min-h-0" style={{ paddingTop: isMobile ? 24 : 40 * s }}>
+        <div className="flex items-center justify-center gap-3 text-center" style={{ maxWidth: '92vw' }}>
+          <h1 style={{ fontSize: isMobile ? 26 : 46 * s, fontWeight: 700, lineHeight: 1.15, color: PRVOUKA_COLORS.TEXT }}>{question.prompt}</h1>
           {canSpeak() ? (
             <button
               type="button"
               onClick={() => speakCzech(spokenText(question))}
               className="flex-shrink-0 rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-95"
-              style={{ width: isMobile ? 40 : 52, height: isMobile ? 40 : 52, backgroundColor: '#fff', border: `3px solid ${PRVOUKA_COLORS.CARD_BORDER}`, color: PRVOUKA_COLORS.TEXT }}
+              style={{ width: isMobile ? 40 : 52 * s, height: isMobile ? 40 : 52 * s, backgroundColor: '#fff', border: `3px solid ${PRVOUKA_COLORS.CARD_BORDER}`, color: PRVOUKA_COLORS.TEXT }}
               aria-label="Přečíst nahlas"
             >
-              <Volume2 size={isMobile ? 20 : 26} />
+              <Volume2 size={isMobile ? 20 : 26 * s} />
             </button>
           ) : null}
         </div>
@@ -201,8 +203,8 @@ function ItemCard({ question, illustrations, size }: { question: PrvoukaQuestion
             backgroundColor: PRVOUKA_COLORS.CARD_BG,
             border: `3px solid ${PRVOUKA_COLORS.CARD_BORDER}`,
             borderRadius: 24,
-            padding: '18px 26px',
-            fontSize: size < 150 ? 20 : 28,
+            padding: `${size * 0.045}px ${size * 0.065}px`,
+            fontSize: Math.max(20, size * 0.07),
             fontWeight: 700,
             lineHeight: 1.3,
           }}
@@ -240,12 +242,13 @@ const SORT_PALETTES: BoxPalette[] = [BOX_PALETTES.green, BOX_PALETTES.orange, BO
 /** Třídění: kartička nahoře sjede do zvolené krabice (jako Rozřaď čísla). */
 function SortView({ question, options, illustrations, locked, onAnswer }: { question: PrvoukaQuestion; options: PrvoukaChoiceOption[]; illustrations: IllustrationLookup; locked: boolean; onAnswer: (ok: boolean) => void }) {
   const isMobile = useIsMobile();
+  const s = useDesktopScale();
   const [target, setTarget] = useState<string | null>(null);
   const [sliding, setSliding] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const boxRefs = useRef(new Map<string, HTMLDivElement>());
-  const boxSize = isMobile ? (options.length > 2 ? 104 : 140) : options.length > 2 ? 200 : 230;
-  const cardSize = isMobile ? 190 : 320;
+  const boxSize = isMobile ? (options.length > 2 ? 104 : 140) : (options.length > 2 ? 190 : 200) * s;
+  const cardSize = isMobile ? 190 : 260 * s;
   const labelLength = Math.max(...options.flatMap((option) => option.label.split(' ').map((word) => word.length)));
 
   const choose = (option: PrvoukaChoiceOption) => {
@@ -267,16 +270,16 @@ function SortView({ question, options, illustrations, locked, onAnswer }: { ques
   };
 
   return (
-    <div ref={containerRef} className="relative flex flex-col items-center w-full max-w-6xl" style={{ gap: isMobile ? 16 : 32 }}>
+    <div ref={containerRef} className="relative flex flex-col items-center w-full" style={{ gap: isMobile ? 16 : 32 * s }}>
       <motion.div
         style={{ zIndex: sliding ? 5 : 50 }}
         initial={{ scale: 0, opacity: 0 }}
-        animate={{ x: target ? offsetX() : 0, y: sliding ? (isMobile ? 150 : 300) : 0, scale: sliding ? 0.6 : 1, opacity: sliding ? 0 : 1 }}
+        animate={{ x: target ? offsetX() : 0, y: sliding ? (isMobile ? 150 : 260 * s) : 0, scale: sliding ? 0.6 : 1, opacity: sliding ? 0 : 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
       >
         <ItemCard question={question} illustrations={illustrations} size={cardSize} />
       </motion.div>
-      <div className="flex items-end justify-center w-full px-2" style={{ gap: isMobile ? 10 : 48 }}>
+      <div className="flex items-end justify-center w-full px-2" style={{ gap: isMobile ? 10 : 48 * s }}>
         {options.map((option, position) => (
           <div
             key={option.id}
@@ -318,19 +321,20 @@ function ChoiceView({
   onAnswer: (ok: boolean) => void;
 }) {
   const isMobile = useIsMobile();
+  const s = useDesktopScale();
   const [chosen, setChosen] = useState<string | null>(null);
   const choose = (option: PrvoukaChoiceOption) => {
     if (locked || chosen) return;
     setChosen(option.id);
     setTimeout(() => onAnswer(option.correct), 350);
   };
-  const cardSize = isMobile ? 260 : 420;
+  const cardSize = isMobile ? 260 : 420 * s;
 
   if (layout === 'yesno') {
     return (
-      <div className="flex flex-col items-center w-full" style={{ gap: isMobile ? 18 : 32 }}>
+      <div className="flex flex-col items-center w-full" style={{ gap: isMobile ? 18 : 32 * s }}>
         <ItemCard question={question} illustrations={illustrations} size={cardSize} />
-        <div className="flex justify-center" style={{ gap: isMobile ? 16 : 40 }}>
+        <div className="flex justify-center" style={{ gap: isMobile ? 16 : 40 * s }}>
           {options.map((option) => {
             const yes = option.id === 'ano';
             const palette = yes ? BOX_PALETTES.green : BOX_PALETTES.pink;
@@ -344,8 +348,8 @@ function ChoiceView({
                 animate={{ scale: chosen === option.id ? 1.08 : 1 }}
                 className="flex flex-col items-center justify-center"
                 style={{
-                  width: isMobile ? 130 : 200,
-                  height: isMobile ? 120 : 170,
+                  width: isMobile ? 130 : 200 * s,
+                  height: isMobile ? 120 : 170 * s,
                   borderRadius: 24,
                   backgroundColor: palette.front,
                   border: `4px solid ${palette.border}`,
@@ -353,8 +357,8 @@ function ChoiceView({
                   boxShadow: `0 6px 0 ${palette.border}`,
                 }}
               >
-                <span style={{ fontSize: isMobile ? 48 : 72, lineHeight: 1, fontWeight: 800 }}>{yes ? '✓' : '✗'}</span>
-                <span style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700 }}>{option.label}</span>
+                <span style={{ fontSize: isMobile ? 48 : 72 * s, lineHeight: 1, fontWeight: 800 }}>{yes ? '✓' : '✗'}</span>
+                <span style={{ fontSize: isMobile ? 24 : 32 * s, fontWeight: 700 }}>{option.label}</span>
               </motion.button>
             );
           })}
@@ -365,13 +369,13 @@ function ChoiceView({
 
   const pictures = layout === 'pictures';
   return (
-    <div className={`flex items-center justify-center w-full ${pictures ? 'flex-col' : 'flex-col lg:flex-row'}`} style={{ gap: isMobile ? 18 : 40 }}>
+    <div className={`flex items-center justify-center w-full ${pictures ? 'flex-col' : 'flex-col lg:flex-row'}`} style={{ gap: isMobile ? 18 : 40 * s }}>
       {question.picture || question.caption ? <ItemCard question={question} illustrations={illustrations} size={cardSize} /> : null}
       <div
         className="grid w-full"
         style={{
-          gap: isMobile ? 10 : 16,
-          maxWidth: pictures ? 780 : 520,
+          gap: isMobile ? 10 : 16 * s,
+          maxWidth: (pictures ? 820 : 560) * (isMobile ? 1 : s),
           gridTemplateColumns: pictures ? `repeat(${options.length}, minmax(0, 1fr))` : options.length === 4 && !isMobile ? 'repeat(2, minmax(0, 1fr))' : '1fr',
         }}
       >
@@ -385,20 +389,20 @@ function ChoiceView({
             animate={{ scale: chosen === option.id ? 1.05 : 1 }}
             className="flex flex-col items-center justify-center text-center"
             style={{
-              minHeight: pictures ? undefined : isMobile ? 56 : 72,
+              minHeight: pictures ? undefined : isMobile ? 56 : 84 * s,
               padding: pictures ? 10 : '12px 18px',
               borderRadius: 18,
               backgroundColor: chosen === option.id ? '#FFF4E3' : PRVOUKA_COLORS.CARD_BG,
               border: `3px solid ${chosen === option.id ? PRVOUKA_COLORS.TEXT : PRVOUKA_COLORS.CARD_BORDER}`,
               color: PRVOUKA_COLORS.TEXT,
-              fontSize: isMobile ? 20 : 26,
+              fontSize: isMobile ? 20 : 30 * s,
               fontWeight: 700,
               lineHeight: 1.2,
               boxShadow: `0 4px 0 ${PRVOUKA_COLORS.CARD_BORDER}`,
             }}
           >
-            {option.picture ? <PrvoukaPictureView picture={option.picture} illustrations={illustrations} size={isMobile ? 96 : 200} height={isMobile ? 84 : 170} /> : null}
-            {option.label ? <span style={{ fontSize: pictures ? (isMobile ? 16 : 20) : undefined }}>{option.label}</span> : null}
+            {option.picture ? <PrvoukaPictureView picture={option.picture} illustrations={illustrations} size={isMobile ? 96 : 200 * s} height={isMobile ? 84 : 170 * s} /> : null}
+            {option.label ? <span style={{ fontSize: pictures ? (isMobile ? 16 : 20 * s) : undefined }}>{option.label}</span> : null}
           </motion.button>
         ))}
       </div>
@@ -427,11 +431,18 @@ function ClockView({
   onAnswer: (ok: boolean) => void;
 }) {
   const isMobile = useIsMobile();
-  const [time, setTime] = useState(() => ({ hour: (hour + 4) % 12, minute: (minute + (step >= 30 ? 30 : 20)) % 60 }));
-  const size = isMobile ? 260 : 360;
+  const s = useDesktopScale();
+  // Ručičky začínají jinde než cíl a nikdy ne na sobě (12:00 by byla jedna čára).
+  const [time, setTime] = useState(() => {
+    const startMinute = (minute + (step >= 30 ? 30 : 20)) % 60;
+    let startHour = (hour + 4) % 12;
+    if (Math.abs(startHour * 5 - startMinute) < 5 || (startHour === 0 && startMinute === 0)) startHour = (startHour + 3) % 12;
+    return { hour: startHour, minute: startMinute };
+  });
+  const size = isMobile ? 260 : 430 * s;
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-center" style={{ gap: isMobile ? 16 : 48 }}>
-      {question.picture ? <PrvoukaPictureView picture={question.picture} illustrations={illustrations} size={isMobile ? 200 : 300} height={isMobile ? 140 : 220} /> : null}
+    <div className="flex flex-col lg:flex-row items-center justify-center" style={{ gap: isMobile ? 16 : 48 * s }}>
+      {question.picture ? <PrvoukaPictureView picture={question.picture} illustrations={illustrations} size={isMobile ? 200 : 300 * s} height={isMobile ? 140 : 220 * s} /> : null}
       <div className="flex flex-col items-center" style={{ gap: 14 }}>
         <PrvoukaClock
           hour={time.hour}
@@ -441,7 +452,7 @@ function ClockView({
           show24={show24}
           onChange={(nextHour, nextMinute) => !locked && setTime({ hour: nextHour, minute: nextMinute })}
         />
-        <p style={{ fontSize: isMobile ? 15 : 18, fontWeight: 600, opacity: 0.8 }}>Táhni za ručičky – malá ukazuje hodiny, velká minuty.</p>
+        <p style={{ fontSize: isMobile ? 15 : 18 * s, fontWeight: 600, opacity: 0.8 }}>Táhni za ručičky – malá ukazuje hodiny, velká minuty.</p>
       </div>
       <motion.button
         type="button"
@@ -449,7 +460,7 @@ function ClockView({
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.92 }}
         className="rounded-full flex items-center justify-center text-white"
-        style={{ width: isMobile ? 64 : 84, height: isMobile ? 64 : 84, backgroundColor: '#2C3F98', fontSize: isMobile ? 32 : 44, fontWeight: 800, boxShadow: '0 5px 0 #1d2a6b' }}
+        style={{ width: isMobile ? 64 : 84 * s, height: isMobile ? 64 : 84 * s, backgroundColor: '#2C3F98', fontSize: isMobile ? 32 : 44 * s, fontWeight: 800, boxShadow: '0 5px 0 #1d2a6b' }}
         aria-label="Hotovo"
       >
         ✓
@@ -461,6 +472,7 @@ function ClockView({
 /** Kruh měsíců, roční období, týden, části dne. */
 function BoardView({ question, illustrations, locked, onAnswer }: { question: PrvoukaQuestion; illustrations: IllustrationLookup; locked: boolean; onAnswer: (ok: boolean) => void }) {
   const isMobile = useIsMobile();
+  const s = useDesktopScale();
   const task = question.task as Extract<PrvoukaQuestion['task'], { kind: 'board' }>;
   const size = task.board === 'months' ? 12 : task.board === 'week' ? 7 : task.board === 'dayparts' ? 6 : 4;
   const multi = task.mode === 'all' && task.correct.length > 1;
@@ -483,9 +495,9 @@ function BoardView({ question, illustrations, locked, onAnswer }: { question: Pr
 
   const states: BoardItemState[] = Array.from({ length: size }, (_, item) => (selected.includes(item) ? 'selected' : 'idle'));
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-center w-full" style={{ gap: isMobile ? 16 : 40 }}>
-      {question.picture || question.caption ? <ItemCard question={question} illustrations={illustrations} size={isMobile ? 220 : 340} /> : null}
-      <div className="flex flex-col items-center w-full" style={{ gap: 16, maxWidth: task.board === 'months' ? 520 : 900 }}>
+    <div className="flex flex-col lg:flex-row items-center justify-center w-full" style={{ gap: isMobile ? 16 : 40 * s }}>
+      {question.picture || question.caption ? <ItemCard question={question} illustrations={illustrations} size={isMobile ? 220 : 340 * s} /> : null}
+      <div className="flex flex-col items-center w-full" style={{ gap: 16, maxWidth: (task.board === 'months' ? 620 : 1000) * (isMobile ? 1 : s) }}>
         <PrvoukaBoardView board={task.board} states={states} onTap={tap} disabled={locked} illustrations={illustrations} />
         {multi ? (
           <motion.button
@@ -495,7 +507,7 @@ function BoardView({ question, illustrations, locked, onAnswer }: { question: Pr
             whileTap={{ scale: 0.92 }}
             disabled={selected.length === 0}
             className="rounded-full flex items-center justify-center text-white disabled:opacity-40"
-            style={{ width: 72, height: 72, backgroundColor: '#2C3F98', fontSize: 38, fontWeight: 800, boxShadow: '0 5px 0 #1d2a6b' }}
+            style={{ width: 72 * (isMobile ? 1 : s), height: 72 * (isMobile ? 1 : s), backgroundColor: '#2C3F98', fontSize: 38 * (isMobile ? 1 : s), fontWeight: 800, boxShadow: '0 5px 0 #1d2a6b' }}
             aria-label="Hotovo"
           >
             ✓

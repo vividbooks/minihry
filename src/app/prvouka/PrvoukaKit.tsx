@@ -36,11 +36,34 @@ export function useIsMobile(): boolean {
   return isMobile;
 }
 
+/**
+ * Měřítko pro velké obrazovky: hry běží hlavně na interaktivní tabuli, takže vše
+ * roste s oknem. Výchozí rozměry jsou navržené pro 1200 × 780; na 1920 × 1080 je to ~1,4×.
+ */
+export function useDesktopScale(): number {
+  const compute = () => {
+    if (typeof window === 'undefined') return 1;
+    return Math.max(0.85, Math.min(2.4, Math.min(window.innerWidth / 1100, window.innerHeight / 700)));
+  };
+  const [scale, setScale] = useState(compute);
+  useEffect(() => {
+    const onResize = () => setScale(compute());
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return scale;
+}
+
+function useDesktopScaleValue(): number {
+  return Math.max(0.85, Math.min(2.4, Math.min(window.innerWidth / 1100, window.innerHeight / 700)));
+}
+
 /* ------------------------------------------------------------ lišta postupu */
 
 /** Lišta pod hrou: pruh postupu, „3/10“ a tři srdíčka – stejná jako v Rozřaď čísla. */
 export function PrvoukaProgress({ current, total, lives, maxLives = 3 }: { current: number; total: number; lives: number; maxLives?: number }) {
   const isMobile = useIsMobile();
+  const s = useDesktopScale();
   const progress = Math.min(100, (current / Math.max(1, total)) * 100);
   return (
     <div
@@ -48,16 +71,16 @@ export function PrvoukaProgress({ current, total, lives, maxLives = 3 }: { curre
       style={{ background: '#FAFAFA', border: '1px solid #E8E8E8' }}
     >
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="rounded-full overflow-hidden" style={{ backgroundColor: '#E8E8E8', height: isMobile ? 8 : 12, width: isMobile ? 120 : 190 }}>
+        <div className="rounded-full overflow-hidden" style={{ backgroundColor: '#E8E8E8', height: isMobile ? 8 : 12 * s, width: isMobile ? 120 : 190 * s }}>
           <div className="h-full transition-all duration-300" style={{ width: `${progress}%`, backgroundColor: '#93C5FD' }} />
         </div>
-        <div style={{ color: '#6B7280', fontSize: isMobile ? 22 : 28, fontWeight: 500, minWidth: isMobile ? 70 : 95, textAlign: 'right' }}>
+        <div style={{ color: '#6B7280', fontSize: isMobile ? 22 : 28 * s, fontWeight: 500, minWidth: isMobile ? 70 : 95 * s, textAlign: 'right' }}>
           {current}/{total}
         </div>
       </div>
       <div className="flex items-center gap-1 sm:gap-1.5">
         {Array.from({ length: maxLives }, (_, index) => index + 1).map((i) => (
-          <svg key={i} viewBox="0 0 24 24" style={{ width: isMobile ? 18 : 24, height: isMobile ? 18 : 24 }} fill={i <= lives ? '#F87171' : '#E5E7EB'} className="flex-shrink-0">
+          <svg key={i} viewBox="0 0 24 24" style={{ width: isMobile ? 18 : 24 * s, height: isMobile ? 18 : 24 * s }} fill={i <= lives ? '#F87171' : '#E5E7EB'} className="flex-shrink-0">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
           </svg>
         ))}
@@ -70,6 +93,8 @@ export function PrvoukaProgress({ current, total, lives, maxLives = 3 }: { curre
 
 /** Překryv SPRÁVNĚ! / ZKUS ZNOVU! – stejný jako v Rozřaď čísla, navíc krátká nápověda. */
 export function PrvoukaFeedbackOverlay({ isCorrect, hint, onComplete }: { isCorrect: boolean; hint?: string; onComplete: () => void }) {
+  const isMobile = useIsMobile();
+  const s = isMobile ? 1 : useDesktopScaleValue();
   useEffect(() => {
     const timer = setTimeout(onComplete, isCorrect ? 1300 : hint ? 2600 : 1500);
     return () => clearTimeout(timer);
@@ -84,16 +109,16 @@ export function PrvoukaFeedbackOverlay({ isCorrect, hint, onComplete }: { isCorr
       onClick={onComplete}
     >
       <motion.div
-        className="text-center px-10 sm:px-12 py-6 sm:py-8 rounded-3xl max-w-xl"
+        className="text-center px-10 sm:px-12 py-6 sm:py-8 rounded-3xl"
         style={{ backgroundColor: isCorrect ? '#4CAF50' : '#FF4D6D', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)' }}
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
       >
-        <div className="text-white" style={{ fontSize: 80, lineHeight: 1, marginBottom: 12 }}>{isCorrect ? '✓' : '✗'}</div>
-        <div className="text-white" style={{ fontSize: 44, fontWeight: 'bold' }}>{isCorrect ? 'SPRÁVNĚ!' : 'ZKUS ZNOVU!'}</div>
+        <div className="text-white" style={{ fontSize: 80 * s, lineHeight: 1, marginBottom: 12 * s }}>{isCorrect ? '✓' : '✗'}</div>
+        <div className="text-white" style={{ fontSize: 44 * s, fontWeight: 'bold' }}>{isCorrect ? 'SPRÁVNĚ!' : 'ZKUS ZNOVU!'}</div>
         {!isCorrect && hint ? (
-          <div className="text-white mt-3" style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.35 }}>{hint}</div>
+          <div className="text-white mt-3" style={{ fontSize: 22 * s, fontWeight: 600, lineHeight: 1.35, maxWidth: 640 * s }}>{hint}</div>
         ) : null}
       </motion.div>
     </motion.div>
