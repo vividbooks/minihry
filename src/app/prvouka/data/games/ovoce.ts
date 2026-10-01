@@ -8,7 +8,7 @@ interface Produce {
 }
 
 const ill = (id: string, emoji: string, alt: string): PrvoukaPicture => ({ kind: 'ill', id, emoji, alt });
-const emoji = (value: string, alt: string): PrvoukaPicture => ({ kind: 'emoji', emoji: value, alt });
+const photo = (key: string, alt: string): PrvoukaPicture => ({ kind: 'photo', src: `/prvouka/foto/${key}.jpg`, alt });
 
 /**
  * Ovoce a zelenina (1/1/12). Kde má knihovna ilustrací Laioutu obrázek, bere se odtud.
@@ -21,25 +21,25 @@ const PRODUCE: Produce[] = [
   { key: 'boruvky', name: 'borůvky', picture: ill('matika-boruvka', '🫐', 'Borůvka'), kind: 'ovoce' },
   { key: 'mandarinka', name: 'mandarinka', picture: ill('matika-mandarinka', '🍊', 'Mandarinka'), kind: 'ovoce' },
   { key: 'maliny', name: 'maliny', picture: ill('prvouka-malinovnik', '🍓', 'Maliník s plody'), kind: 'ovoce' },
-  { key: 'hruska', name: 'hruška', picture: emoji('🍐', 'Hruška'), kind: 'ovoce' },
-  { key: 'tresne', name: 'třešně', picture: emoji('🍒', 'Třešně'), kind: 'ovoce' },
-  { key: 'jahoda', name: 'jahoda', picture: emoji('🍓', 'Jahoda'), kind: 'ovoce' },
-  { key: 'citron', name: 'citron', picture: emoji('🍋', 'Citron'), kind: 'ovoce' },
-  { key: 'hrozny', name: 'hroznové víno', picture: emoji('🍇', 'Hroznové víno'), kind: 'ovoce' },
-  { key: 'meloun', name: 'meloun', picture: emoji('🍉', 'Meloun'), kind: 'ovoce' },
-  { key: 'broskev', name: 'broskev', picture: emoji('🍑', 'Broskev'), kind: 'ovoce' },
-  { key: 'kiwi', name: 'kiwi', picture: emoji('🥝', 'Kiwi'), kind: 'ovoce' },
-  { key: 'ananas', name: 'ananas', picture: emoji('🍍', 'Ananas'), kind: 'ovoce' },
+  { key: 'hruska', name: 'hruška', picture: photo('hruska', 'Hruška'), kind: 'ovoce' },
+  { key: 'tresne', name: 'třešně', picture: photo('tresne', 'Třešně'), kind: 'ovoce' },
+  { key: 'jahoda', name: 'jahoda', picture: photo('jahoda', 'Jahoda'), kind: 'ovoce' },
+  { key: 'citron', name: 'citron', picture: photo('citron', 'Citron'), kind: 'ovoce' },
+  { key: 'hrozny', name: 'hroznové víno', picture: photo('hrozny', 'Hroznové víno'), kind: 'ovoce' },
+  { key: 'meloun', name: 'meloun', picture: photo('meloun', 'Meloun'), kind: 'ovoce' },
+  { key: 'broskev', name: 'broskev', picture: photo('broskev', 'Broskev'), kind: 'ovoce' },
+  { key: 'kiwi', name: 'kiwi', picture: photo('kiwi', 'Kiwi'), kind: 'ovoce' },
+  { key: 'ananas', name: 'ananas', picture: photo('ananas', 'Ananas'), kind: 'ovoce' },
   { key: 'mrkev', name: 'mrkev', picture: ill('prvouka-mrkev', '🥕', 'Mrkev'), kind: 'zelenina' },
   { key: 'cibule', name: 'cibule', picture: ill('prvouka-cibule', '🧅', 'Cibule'), kind: 'zelenina' },
   { key: 'dyne', name: 'dýně', picture: ill('prvouka-dyne', '🎃', 'Dýně'), kind: 'zelenina' },
-  { key: 'rajce', name: 'rajče', picture: emoji('🍅', 'Rajče'), kind: 'zelenina' },
-  { key: 'okurka', name: 'okurka', picture: emoji('🥒', 'Okurka'), kind: 'zelenina' },
-  { key: 'paprika', name: 'paprika', picture: emoji('🫑', 'Paprika'), kind: 'zelenina' },
-  { key: 'brokolice', name: 'brokolice', picture: emoji('🥦', 'Brokolice'), kind: 'zelenina' },
-  { key: 'salat', name: 'salát', picture: emoji('🥬', 'Salát'), kind: 'zelenina' },
-  { key: 'cesnek', name: 'česnek', picture: emoji('🧄', 'Česnek'), kind: 'zelenina' },
-  { key: 'lilek', name: 'lilek', picture: emoji('🍆', 'Lilek'), kind: 'zelenina' },
+  { key: 'rajce', name: 'rajče', picture: photo('rajce', 'Rajče'), kind: 'zelenina' },
+  { key: 'okurka', name: 'okurka', picture: photo('okurka', 'Okurka'), kind: 'zelenina' },
+  { key: 'paprika', name: 'paprika', picture: photo('paprika', 'Paprika'), kind: 'zelenina' },
+  { key: 'brokolice', name: 'brokolice', picture: photo('brokolice', 'Brokolice'), kind: 'zelenina' },
+  { key: 'salat', name: 'salát', picture: photo('salat', 'Salát'), kind: 'zelenina' },
+  { key: 'cesnek', name: 'česnek', picture: photo('cesnek', 'Česnek'), kind: 'zelenina' },
+  { key: 'lilek', name: 'lilek', picture: photo('lilek', 'Lilek'), kind: 'zelenina' },
 ];
 
 interface Fruit {

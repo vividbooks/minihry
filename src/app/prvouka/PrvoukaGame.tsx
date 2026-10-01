@@ -194,7 +194,7 @@ function ItemCard({ question, illustrations, size }: { question: PrvoukaQuestion
   if (isStatement && question.caption) {
     return (
       <div className="flex items-center gap-3 sm:gap-5 max-w-3xl">
-        {hasPicture && question.picture ? <PrvoukaPictureView picture={question.picture} illustrations={illustrations} size={size * 0.75} /> : null}
+        {hasPicture && question.picture ? <PrvoukaPictureView picture={question.picture} illustrations={illustrations} size={size * 0.6} height={size * 0.8} /> : null}
         <div
           className="text-center"
           style={{
@@ -212,22 +212,24 @@ function ItemCard({ question, illustrations, size }: { question: PrvoukaQuestion
       </div>
     );
   }
+  // Obrázek vyplní skoro celou kartu, na výšku 4 : 3 – fotky na šířku nebudou malé.
+  const pictureWidth = size * 0.92;
+  const pictureHeight = size * (question.caption ? 0.7 : 0.8);
   return (
     <div
       className="flex flex-col items-center justify-center"
       style={{
         width: size,
-        minHeight: size,
         backgroundColor: PRVOUKA_COLORS.CARD_BG,
         border: `${size < 100 ? 2 : 3}px solid ${PRVOUKA_COLORS.CARD_BORDER}`,
-        borderRadius: size < 100 ? 8 : 12,
-        padding: size * 0.06,
-        gap: size * 0.03,
+        borderRadius: size < 100 ? 8 : 16,
+        padding: size * 0.04,
+        gap: size * 0.02,
       }}
     >
-      {question.picture ? <PrvoukaPictureView picture={question.picture} illustrations={illustrations} size={size * (question.caption ? 0.72 : 0.86)} /> : null}
+      {question.picture ? <PrvoukaPictureView picture={question.picture} illustrations={illustrations} size={pictureWidth} height={pictureHeight} /> : null}
       {question.caption ? (
-        <div style={{ fontSize: Math.max(16, size * 0.1), fontWeight: 700, lineHeight: 1.1, textAlign: 'center' }}>{question.caption}</div>
+        <div style={{ fontSize: Math.max(18, size * 0.075), fontWeight: 700, lineHeight: 1.1, textAlign: 'center', paddingBottom: size * 0.02 }}>{question.caption}</div>
       ) : null}
     </div>
   );
@@ -242,8 +244,8 @@ function SortView({ question, options, illustrations, locked, onAnswer }: { ques
   const [sliding, setSliding] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const boxRefs = useRef(new Map<string, HTMLDivElement>());
-  const boxSize = isMobile ? (options.length > 2 ? 104 : 140) : options.length > 2 ? 230 : 260;
-  const cardSize = isMobile ? 130 : 230;
+  const boxSize = isMobile ? (options.length > 2 ? 104 : 140) : options.length > 2 ? 200 : 230;
+  const cardSize = isMobile ? 190 : 320;
   const labelLength = Math.max(...options.flatMap((option) => option.label.split(' ').map((word) => word.length)));
 
   const choose = (option: PrvoukaChoiceOption) => {
@@ -322,7 +324,7 @@ function ChoiceView({
     setChosen(option.id);
     setTimeout(() => onAnswer(option.correct), 350);
   };
-  const cardSize = isMobile ? 170 : 260;
+  const cardSize = isMobile ? 260 : 420;
 
   if (layout === 'yesno') {
     return (
@@ -395,7 +397,7 @@ function ChoiceView({
               boxShadow: `0 4px 0 ${PRVOUKA_COLORS.CARD_BORDER}`,
             }}
           >
-            {option.picture ? <PrvoukaPictureView picture={option.picture} illustrations={illustrations} size={isMobile ? 80 : 150} /> : null}
+            {option.picture ? <PrvoukaPictureView picture={option.picture} illustrations={illustrations} size={isMobile ? 96 : 200} height={isMobile ? 84 : 170} /> : null}
             {option.label ? <span style={{ fontSize: pictures ? (isMobile ? 16 : 20) : undefined }}>{option.label}</span> : null}
           </motion.button>
         ))}
@@ -429,7 +431,7 @@ function ClockView({
   const size = isMobile ? 260 : 360;
   return (
     <div className="flex flex-col lg:flex-row items-center justify-center" style={{ gap: isMobile ? 16 : 48 }}>
-      {question.picture ? <PrvoukaPictureView picture={question.picture} illustrations={illustrations} size={isMobile ? 160 : 240} /> : null}
+      {question.picture ? <PrvoukaPictureView picture={question.picture} illustrations={illustrations} size={isMobile ? 200 : 300} height={isMobile ? 140 : 220} /> : null}
       <div className="flex flex-col items-center" style={{ gap: 14 }}>
         <PrvoukaClock
           hour={time.hour}
@@ -482,9 +484,9 @@ function BoardView({ question, illustrations, locked, onAnswer }: { question: Pr
   const states: BoardItemState[] = Array.from({ length: size }, (_, item) => (selected.includes(item) ? 'selected' : 'idle'));
   return (
     <div className="flex flex-col lg:flex-row items-center justify-center w-full" style={{ gap: isMobile ? 16 : 40 }}>
-      {question.picture || question.caption ? <ItemCard question={question} illustrations={illustrations} size={isMobile ? 150 : 220} /> : null}
+      {question.picture || question.caption ? <ItemCard question={question} illustrations={illustrations} size={isMobile ? 220 : 340} /> : null}
       <div className="flex flex-col items-center w-full" style={{ gap: 16, maxWidth: task.board === 'months' ? 520 : 900 }}>
-        <PrvoukaBoardView board={task.board} states={states} onTap={tap} disabled={locked} />
+        <PrvoukaBoardView board={task.board} states={states} onTap={tap} disabled={locked} illustrations={illustrations} />
         {multi ? (
           <motion.button
             type="button"

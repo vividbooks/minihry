@@ -28,6 +28,8 @@ export type PrvoukaSignId =
 export type PrvoukaPicture =
   | { kind: 'ill'; id: string; emoji: string; alt: string }
   | { kind: 'emoji'; emoji: string; alt: string }
+  /** Fotka z Wikimedia Commons (licence v `public/prvouka/foto/credits.json`). */
+  | { kind: 'photo'; src: string; alt: string }
   | { kind: 'sign'; sign: PrvoukaSignId; alt: string }
   | { kind: 'clock'; hour: number; minute: number; show24?: boolean }
   | { kind: 'digital'; text: string; note?: string };

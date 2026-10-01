@@ -54,6 +54,7 @@ interface Animal {
 }
 
 const ill = (id: string, emoji: string, alt: string): PrvoukaPicture => ({ kind: 'ill', id, emoji, alt });
+const photo = (key: string, alt: string): PrvoukaPicture => ({ kind: 'photo', src: `/prvouka/foto/${key}.jpg`, alt });
 
 /** Zvířata, která mají obrázek v knihovně ilustrací Laioutu (prvouka, čeština, matematika). */
 const ANIMALS: Animal[] = [
@@ -120,13 +121,13 @@ const FAMILIES: Family[] = [
   { key: 'ovce', mother: 'ovce', father: 'beran', young: 'jehně', picture: ill('beran', '🐏', 'Beran'), shows: 'father' },
   { key: 'pes', mother: 'fena', father: 'pes', young: 'štěně', picture: ill('stene', '🐶', 'Štěně'), shows: 'young' },
   { key: 'kocka', mother: 'kočka', father: 'kocour', young: 'kotě', picture: ill('matika-cervenakocka', '🐈', 'Kočka'), shows: 'mother' },
-  { key: 'slepice', mother: 'slepice', father: 'kohout', young: 'kuře', picture: { kind: 'emoji', emoji: '🐔', alt: 'Slepice' }, shows: 'mother' },
-  { key: 'koza', mother: 'koza', father: 'kozel', young: 'kůzle', picture: { kind: 'emoji', emoji: '🐐', alt: 'Koza' }, shows: 'mother' },
+  { key: 'slepice', mother: 'slepice', father: 'kohout', young: 'kuře', picture: photo('slepice', 'Slepice'), shows: 'mother' },
+  { key: 'koza', mother: 'koza', father: 'kozel', young: 'kůzle', picture: photo('koza', 'Koza'), shows: 'mother' },
   { key: 'kachna', mother: 'kachna', father: 'kačer', young: 'káčátko', picture: ill('prvouka-kachna', '🦆', 'Kačer'), shows: 'father' },
   { key: 'srna', mother: 'srna', father: 'srnec', young: 'srnče', picture: ill('prvouka-srnka', '🦌', 'Srna'), shows: 'mother' },
   { key: 'jelen', mother: 'laň', father: 'jelen', young: 'kolouch', picture: ill('jelen', '🦌', 'Jelen'), shows: 'father' },
   { key: 'medved', mother: 'medvědice', father: 'medvěd', young: 'medvídě', picture: ill('matika-medved', '🐻', 'Medvěd'), shows: 'father' },
-  { key: 'liska', mother: 'liška', father: 'lišák', young: 'liščátko', picture: { kind: 'emoji', emoji: '🦊', alt: 'Liška' }, shows: 'mother' },
+  { key: 'liska', mother: 'liška', father: 'lišák', young: 'liščátko', picture: photo('liska', 'Liška'), shows: 'mother' },
 ];
 
 function capital(text: string): string {

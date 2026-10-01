@@ -25,6 +25,8 @@ export interface PrvoukaLandingGame {
   playBg: string;
   /** Ilustrace z knihovny Laioutu pro kartu. */
   image: string;
+  /** Výřez obrázku na kartě (`object-position`), když střed usekne hlavu. */
+  imagePosition?: string;
 }
 
 export const PRVOUKA_LANDING_GAMES: PrvoukaLandingGame[] = [
@@ -49,6 +51,7 @@ export const PRVOUKA_LANDING_GAMES: PrvoukaLandingGame[] = [
     bg: '#e0f2e6',
     playBg: '#E7F9EE',
     image: `${ILLUSTRATIONS}/ovoce-zelenina-1300.png`,
+    imagePosition: 'center 15%',
   },
   {
     id: 'prvoukaHodiny',
@@ -60,6 +63,7 @@ export const PRVOUKA_LANDING_GAMES: PrvoukaLandingGame[] = [
     bg: '#D0DBFF',
     playBg: '#D0DBFF',
     image: `${ILLUSTRATIONS}/prvouka-vstava-1300.png`,
+    imagePosition: 'center 30%',
   },
   {
     id: 'prvoukaRokDen',
@@ -82,6 +86,7 @@ export const PRVOUKA_LANDING_GAMES: PrvoukaLandingGame[] = [
     bg: '#FFD3C5',
     playBg: '#FFE8ED',
     image: `${ILLUSTRATIONS}/prvouka-divka-telefon-1300.png`,
+    imagePosition: 'center 12%',
   },
 ];
 

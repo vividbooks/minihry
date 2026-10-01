@@ -2,7 +2,7 @@ import type { PrvoukaChoiceOption, PrvoukaGame, PrvoukaPicture, PrvoukaQuestion,
 import { createRandom, pickMany } from '../random';
 
 const ill = (id: string, emoji: string, alt: string): PrvoukaPicture => ({ kind: 'ill', id, emoji, alt });
-const emoji = (value: string, alt: string): PrvoukaPicture => ({ kind: 'emoji', emoji: value, alt });
+const photo = (key: string, alt: string): PrvoukaPicture => ({ kind: 'photo', src: `/prvouka/foto/${key}.jpg`, alt });
 
 interface Sign {
   id: PrvoukaSignId;
@@ -47,7 +47,7 @@ const CROSSING: Statement[] = [
   { key: 'mobil', text: 'Při přecházení si můžu psát zprávy v mobilu.', correct: false, hint: 'Při přecházení se dívám na silnici, ne do mobilu.', grade: 1 },
   { key: 'mic', text: 'Když se mi míč skutálí na silnici, hned pro něj běžím.', correct: false, hint: 'Nejdřív se zastavím a rozhlédnu. Ještě lepší je poprosit dospělého.', grade: 1 },
   { key: 'bez-chodniku', text: 'Kde není chodník, jdu po levé straně silnice proti autům.', correct: true, hint: 'Vlevo vidím auta, která jedou proti mně.', grade: 2 },
-  { key: 'helma', text: 'Na kolo si vždycky nasadím helmu.', correct: true, picture: emoji('🚲', 'Kolo'), hint: 'Helma chrání hlavu. Do 18 let ji musíš mít na kole povinně.', grade: 2 },
+  { key: 'helma', text: 'Na kolo si vždycky nasadím helmu.', correct: true, picture: photo('kolo-helma', 'Kluk s helmou na kole'), hint: 'Helma chrání hlavu. Do 18 let ji musíš mít na kole povinně.', grade: 2 },
   { key: 'helma-volna', text: 'Helmu nosím volně, řemínek pod bradou nezapínám.', correct: false, hint: 'Helma musí sedět pevně a řemínek musí být zapnutý.', grade: 2 },
   { key: 'kolo-prechod', text: 'Přes přechod pro chodce kolo vedu.', correct: true, hint: 'Na přechodu jsem chodec – kolo vedu vedle sebe.', grade: 2 },
 ];
@@ -87,12 +87,11 @@ interface FirstAidItem {
 
 /** Lékárnička (1/1/43). */
 const FIRST_AID: FirstAidItem[] = [
-  { key: 'naplast', name: 'náplast', picture: emoji('🩹', 'Náplast'), belongs: true },
-  { key: 'obvaz', name: 'obvaz', picture: emoji('🧻', 'Obvaz'), belongs: true },
-  { key: 'dezinfekce', name: 'dezinfekce', picture: emoji('🧴', 'Dezinfekce'), belongs: true },
+  { key: 'naplast', name: 'náplast', picture: photo('naplast', 'Náplast'), belongs: true },
+  { key: 'dezinfekce', name: 'dezinfekce', picture: photo('dezinfekce', 'Dezinfekce'), belongs: true },
   { key: 'nuzky', name: 'nůžky', picture: ill('matika-nuzky', '✂️', 'Nůžky'), belongs: true },
-  { key: 'rukavice', name: 'gumové rukavice', picture: emoji('🧤', 'Rukavice'), belongs: true },
-  { key: 'teplomer', name: 'teploměr', picture: emoji('🌡️', 'Teploměr'), belongs: true },
+  { key: 'rukavice', name: 'gumové rukavice', picture: photo('rukavice', 'Rukavice'), belongs: true },
+  { key: 'teplomer', name: 'teploměr', picture: photo('teplomer', 'Teploměr'), belongs: true },
   { key: 'cokolada', name: 'čokoláda', picture: ill('prvouka-cokolada', '🍫', 'Čokoláda'), belongs: false },
   { key: 'kleste', name: 'kleště', picture: ill('prvouka-kleste', '🔧', 'Kleště'), belongs: false },
   { key: 'auticko', name: 'autíčko', picture: ill('matika-auto', '🚗', 'Auto'), belongs: false },

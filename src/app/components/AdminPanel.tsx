@@ -5,6 +5,7 @@ import { Settings, Play } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Container5 from '../imports/Container-9188-1388';
 import { PRVOUKA_GAME_GROUPS, prvoukaLandingGame } from '../prvouka/registry';
+import PRVOUKA_PHOTO_CREDITS from '../prvouka/photo-credits.json';
 
 interface AdminPanelProps {
   onConfigureGame: (gameId: GameType) => void;
@@ -20,7 +21,7 @@ const PRVOUKA_COVERS = [
 ];
 
 // Lazy loaded image component to prevent blocking - optimized
-const LazyGameImage = React.memo(({ src, alt, className }: { src: string | null, alt: string, className: string }) => {
+const LazyGameImage = React.memo(({ src, alt, className, objectPosition }: { src: string | null, alt: string, className: string, objectPosition?: string }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
@@ -37,6 +38,7 @@ const LazyGameImage = React.memo(({ src, alt, className }: { src: string | null,
         src={src}
         alt={alt}
         className={`${className} transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        style={objectPosition ? { objectPosition } : undefined}
         onLoad={() => setIsLoaded(true)}
         onError={() => setHasError(true)}
         loading="lazy"
@@ -226,10 +228,10 @@ export const AdminPanel = React.memo(({ onConfigureGame, subject = 'math' }: Adm
     games: group.games
       .map((id) => prvoukaLandingGame(id))
       .filter((game): game is NonNullable<typeof game> => Boolean(game))
-      .map((game) => ({ id: game.id, name: game.name, description: game.description, bg: game.bg, image: game.image, emoji: game.icon })),
+      .map((game) => ({ id: game.id, name: game.name, description: game.description, bg: game.bg, image: game.image, emoji: game.icon, imagePosition: game.imagePosition })),
   }));
 
-  const gameGroups: Array<{ title: string; games: Array<{ id: string; name: string; description: string; bg: string; image?: string; emoji?: string }> }> =
+  const gameGroups: Array<{ title: string; games: Array<{ id: string; name: string; description: string; bg: string; image?: string; emoji?: string; imagePosition?: string }> }> =
     isPrvouka ? prvoukaGameGroups : mathGameGroups;
 
   // Filtrování kategorií podle vybrané kategorie
@@ -394,7 +396,8 @@ export const AdminPanel = React.memo(({ onConfigureGame, subject = 'math' }: Adm
                           <LazyGameImage
                             src={game.image}
                             alt={game.name}
-                            className={`w-full h-full ${isPrvouka ? 'object-contain p-3' : 'object-cover'} rounded-t-3xl`}
+                            className="w-full h-full object-cover rounded-t-3xl"
+                            objectPosition={game.imagePosition}
                           />
                         </Suspense>
                       ) : (
@@ -439,6 +442,23 @@ export const AdminPanel = React.memo(({ onConfigureGame, subject = 'math' }: Adm
           </div>
         ))}
       </div>
+
+      {isPrvouka ? (
+        <details className="max-w-3xl mx-auto px-6 text-[#4e5871] text-sm">
+          <summary className="cursor-pointer font-semibold text-center">Zdroje fotografií</summary>
+          <p className="mt-3 mb-2 opacity-80">
+            Ilustrace jsou z pracovních učebnic prvouky Vividbooks. Fotografie jsou z Wikimedia Commons:
+          </p>
+          <ul className="space-y-1 opacity-80">
+            {(PRVOUKA_PHOTO_CREDITS as Array<{ key: string; file: string; license: string; author: string; source: string }>).map((credit) => (
+              <li key={credit.key}>
+                <a href={credit.source} target="_blank" rel="noopener noreferrer" className="underline">{credit.file.replace(/^File:/, '')}</a>
+                {' – '}{credit.author || 'neznámý autor'}, {credit.license}
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
 
       {/* Footer s logem - 200px bílý prostor */}
       <div className="bg-white py-[100px] flex justify-center items-center">

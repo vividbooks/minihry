@@ -187,28 +187,36 @@ export function PrvoukaBox({
 
 /* ---------------------------------------------------------------- obrázky */
 
-export function PrvoukaPictureView({ picture, illustrations, size }: { picture: PrvoukaPicture; illustrations: IllustrationLookup; size: number }) {
+/**
+ * Obrázek úlohy. `size` je šířka, `height` výška (výchozí čtverec). Fotky a ilustrace
+ * se vejdou celé (`contain`), aby se nic neořízlo.
+ */
+export function PrvoukaPictureView({ picture, illustrations, size, height }: { picture: PrvoukaPicture; illustrations: IllustrationLookup; size: number; height?: number }) {
+  const boxHeight = height ?? size;
+  if (picture.kind === 'photo') {
+    return <img src={picture.src} alt={picture.alt} draggable={false} style={{ width: size, height: boxHeight, objectFit: 'contain', borderRadius: 10 }} />;
+  }
   if (picture.kind === 'clock') {
-    return <PrvoukaClock hour={picture.hour} minute={picture.minute} show24={picture.show24} size={size} />;
+    return <PrvoukaClock hour={picture.hour} minute={picture.minute} show24={picture.show24} size={Math.min(size, boxHeight)} />;
   }
   if (picture.kind === 'digital') {
-    return <DigitalClock text={picture.text} size={size} />;
+    return <DigitalClock text={picture.text} size={Math.min(size, boxHeight * 1.3)} />;
   }
   if (picture.kind === 'sign') {
     if (picture.sign === 'semafor-cervena' || picture.sign === 'semafor-zelena') {
-      return <PedestrianLight green={picture.sign === 'semafor-zelena'} size={size} />;
+      return <PedestrianLight green={picture.sign === 'semafor-zelena'} size={boxHeight} />;
     }
-    return <img src={`/prvouka/znacky/${picture.sign}.svg`} alt={picture.alt} draggable={false} style={{ width: size, height: size, objectFit: 'contain' }} />;
+    return <img src={`/prvouka/znacky/${picture.sign}.svg`} alt={picture.alt} draggable={false} style={{ width: size, height: boxHeight, objectFit: 'contain' }} />;
   }
-  if (picture.kind === 'ill') return <IllustrationImage picture={picture} illustrations={illustrations} size={size} />;
+  if (picture.kind === 'ill') return <IllustrationImage picture={picture} illustrations={illustrations} size={size} height={boxHeight} />;
   return (
-    <span role="img" aria-label={picture.alt} style={{ fontSize: size * 0.7, lineHeight: 1 }}>
+    <span role="img" aria-label={picture.alt} style={{ fontSize: boxHeight * 0.7, lineHeight: 1 }}>
       {picture.emoji}
     </span>
   );
 }
 
-function IllustrationImage({ picture, illustrations, size }: { picture: Extract<PrvoukaPicture, { kind: 'ill' }>; illustrations: IllustrationLookup; size: number }) {
+function IllustrationImage({ picture, illustrations, size, height }: { picture: Extract<PrvoukaPicture, { kind: 'ill' }>; illustrations: IllustrationLookup; size: number; height: number }) {
   const [attempt, setAttempt] = useState(0);
   const url = illustrations.urls(picture.id)[attempt];
   if (url) {
@@ -219,13 +227,13 @@ function IllustrationImage({ picture, illustrations, size }: { picture: Extract<
         alt={picture.alt}
         draggable={false}
         onError={() => setAttempt((value) => value + 1)}
-        style={{ width: size, height: size, objectFit: 'contain' }}
+        style={{ width: size, height, objectFit: 'contain' }}
       />
     );
   }
-  if (!illustrations.ready) return <div style={{ width: size, height: size }} />;
+  if (!illustrations.ready) return <div style={{ width: size, height }} />;
   return (
-    <span role="img" aria-label={picture.alt} style={{ fontSize: size * 0.7, lineHeight: 1 }}>
+    <span role="img" aria-label={picture.alt} style={{ fontSize: height * 0.7, lineHeight: 1 }}>
       {picture.emoji}
     </span>
   );

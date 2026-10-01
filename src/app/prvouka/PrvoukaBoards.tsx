@@ -2,13 +2,21 @@ import React from 'react';
 import { motion } from 'motion/react';
 import type { PrvoukaBoard } from './data/types';
 import { DAY_PARTS, MONTHS, SEASONS, WEEK_DAYS, seasonOfMonth } from './data/games/cas';
-import { BOX_PALETTES, PRVOUKA_COLORS, useIsMobile, type BoxPalette } from './PrvoukaKit';
+import { BOX_PALETTES, PRVOUKA_COLORS, PrvoukaPictureView, useIsMobile, type BoxPalette } from './PrvoukaKit';
+import type { IllustrationLookup } from './illustrations';
+import type { PrvoukaPicture } from './data/types';
 
 export type BoardItemState = 'idle' | 'selected';
 
 /** Barvy ročních období = pastelové krabice z Miniher: jaro zelená, léto žlutá, podzim oranžová, zima modrá. */
 const SEASON_PALETTES: BoxPalette[] = [BOX_PALETTES.green, BOX_PALETTES.yellow, BOX_PALETTES.orange, BOX_PALETTES.blue];
-const SEASON_ICON = ['🌷', '☀️', '🍂', '❄️'];
+/** Obrázky ročních období z knihovny ilustrací prvouky. */
+const SEASON_PICTURES: PrvoukaPicture[] = [
+  { kind: 'ill', id: 'prvouka-snezanka', emoji: '', alt: 'Sněženka – jaro' },
+  { kind: 'ill', id: 'prvouka-obili', emoji: '', alt: 'Zralé obilí – léto' },
+  { kind: 'ill', id: 'prvouka-javorove-listy', emoji: '', alt: 'Javorové listy – podzim' },
+  { kind: 'ill', id: 'prvouka-hranostaj-bily', emoji: '', alt: 'Hranostaj v zimní srsti – zima' },
+];
 
 const DAYPART_SKY = [
   { sky: 'linear-gradient(180deg, #ffd7b0, #fff2c9)', sunX: 22, sunY: 78, sun: '#ffb54a' },
@@ -19,16 +27,18 @@ const DAYPART_SKY = [
   { sky: 'linear-gradient(180deg, #1d2a6b, #3a4aa0)', sunX: 62, sunY: 40, sun: '#f6f1c7' },
 ];
 
-export function PrvoukaBoardView({ board, states, onTap, disabled }: { board: PrvoukaBoard; states: BoardItemState[]; onTap: (index: number) => void; disabled: boolean }) {
+export function PrvoukaBoardView({ board, states, onTap, disabled, illustrations }: { board: PrvoukaBoard; states: BoardItemState[]; onTap: (index: number) => void; disabled: boolean; illustrations: IllustrationLookup }) {
   const isMobile = useIsMobile();
-  if (board === 'months') return <MonthWheel states={states} onTap={onTap} disabled={disabled} />;
+  if (board === 'months') return <MonthWheel states={states} onTap={onTap} disabled={disabled} illustrations={illustrations} />;
 
   if (board === 'seasons') {
     return (
       <div className="grid w-full" style={{ gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : 'repeat(4, minmax(0, 1fr))', gap: isMobile ? 10 : 20 }}>
         {SEASONS.map((season, index) => (
-          <CardButton key={season} palette={SEASON_PALETTES[index]} selected={states[index] === 'selected'} onClick={() => onTap(index)} disabled={disabled} height={isMobile ? 120 : 170}>
-            <span style={{ fontSize: isMobile ? 40 : 56, lineHeight: 1 }}>{SEASON_ICON[index]}</span>
+          <CardButton key={season} palette={SEASON_PALETTES[index]} selected={states[index] === 'selected'} onClick={() => onTap(index)} disabled={disabled} height={isMobile ? 140 : 210}>
+            <span className="flex items-center justify-center rounded-xl bg-white" style={{ padding: 4 }}>
+              <PrvoukaPictureView picture={SEASON_PICTURES[index]} illustrations={illustrations} size={isMobile ? 80 : 130} height={isMobile ? 64 : 110} />
+            </span>
             <span style={{ fontSize: isMobile ? 22 : 30, fontWeight: 700 }}>{season}</span>
           </CardButton>
         ))}
@@ -133,7 +143,7 @@ function wedgePath(index: number, outer: number, inner: number) {
 }
 
 /** Kolečko roku: leden nahoře, výseče v barvách ročních období. */
-function MonthWheel({ states, onTap, disabled }: { states: BoardItemState[]; onTap: (index: number) => void; disabled: boolean }) {
+function MonthWheel({ states, onTap, disabled, illustrations }: { states: BoardItemState[]; onTap: (index: number) => void; disabled: boolean; illustrations: IllustrationLookup }) {
   return (
     <svg viewBox="0 0 360 360" style={{ width: 'min(100%, 30rem, 56vh)', userSelect: 'none' }} role="group" aria-label="Měsíce v roce">
       {MONTHS.map((month, index) => {
@@ -163,13 +173,10 @@ function MonthWheel({ states, onTap, disabled }: { states: BoardItemState[]; onT
         );
       })}
       <circle cx="180" cy="180" r="66" fill="#fff" stroke={PRVOUKA_COLORS.CARD_BORDER} strokeWidth="3" />
-      {SEASON_ICON.map((icon, season) => {
-        const p = polar([90, 180, 270, 0][season], 36);
-        return (
-          <text key={icon} x={p.x} y={p.y} fontSize="26" textAnchor="middle" dominantBaseline="central">
-            {icon}
-          </text>
-        );
+      {SEASON_PICTURES.map((picture, season) => {
+        const p = polar([90, 180, 270, 0][season], 34);
+        const href = picture.kind === 'ill' ? illustrations.urls(picture.id)[0] : undefined;
+        return href ? <image key={season} href={href} x={p.x - 20} y={p.y - 20} width="40" height="40" preserveAspectRatio="xMidYMid meet" /> : null;
       })}
     </svg>
   );

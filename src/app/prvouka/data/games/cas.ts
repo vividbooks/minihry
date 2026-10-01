@@ -23,6 +23,7 @@ const WEEK_WAS = ['bylo pondělí', 'bylo úterý', 'byla středa', 'byl čtvrte
 export const DAY_PARTS = ['ráno', 'dopoledne', 'poledne', 'odpoledne', 'večer', 'noc'];
 
 const ill = (id: string, emoji: string, alt: string): PrvoukaPicture => ({ kind: 'ill', id, emoji, alt });
+const photo = (key: string, alt: string): PrvoukaPicture => ({ kind: 'photo', src: `/prvouka/foto/${key}.jpg`, alt });
 
 interface CalendarFact {
   key: string;
@@ -42,14 +43,14 @@ const CALENDAR_FACTS: CalendarFact[] = [
   { key: 'novy-rok', prompt: 'Ve kterém měsíci začíná nový rok?', months: [0], mode: 'any', hint: 'Nový rok je 1. ledna.', grade: 1 },
   { key: 'velikonoce', prompt: 'Ve kterém měsíci bývají Velikonoce?', months: [2, 3], mode: 'any', picture: ill('prvouka-rehtacka', '🐣', 'Řehtačka'), hint: 'Velikonoce jsou na jaře – v březnu nebo v dubnu.', grade: 1 },
   { key: 'skola-zacina', prompt: 'Ve kterém měsíci začíná škola?', months: [8], mode: 'any', picture: ill('prvouka-dite-batoh', '🎒', 'Dítě s batohem'), hint: 'Školní rok začíná 1. září.', grade: 1 },
-  { key: 'letni-prazdniny', prompt: 'Kdy jsou letní prázdniny? Vyber oba měsíce.', months: [6, 7], mode: 'all', picture: ill('prvouka-slunce', '☀️', 'Slunce'), hint: 'Letní prázdniny jsou v červenci a v srpnu.', grade: 1 },
+  { key: 'letni-prazdniny', prompt: 'Kdy jsou letní prázdniny? Vyber oba měsíce.', months: [6, 7], mode: 'all', picture: ill('prvouka-obili', '🌾', 'Zralé obilí'), hint: 'Letní prázdniny jsou v červenci a v srpnu.', grade: 1 },
   { key: 'vysvedceni', prompt: 'Kdy dostáváme vysvědčení? Vyber oba měsíce.', months: [0, 5], mode: 'all', hint: 'Pololetní vysvědčení je na konci ledna, závěrečné na konci června.', grade: 1 },
   { key: 'den-deti', prompt: 'Ve kterém měsíci je Den dětí?', months: [5], mode: 'any', hint: 'Den dětí je 1. června.', grade: 1 },
   { key: 'den-matek', prompt: 'Ve kterém měsíci slavíme Den matek?', months: [4], mode: 'any', hint: 'Den matek je druhou neděli v květnu.', grade: 2 },
   { key: 'martin', prompt: 'Ve kterém měsíci přijíždí Martin na bílém koni?', months: [10], mode: 'any', hint: 'Svatý Martin má svátek 11. listopadu.', grade: 2 },
   { key: 'podzimni-prazdniny', prompt: 'Ve kterém měsíci bývají podzimní prázdniny?', months: [9], mode: 'any', hint: 'Podzimní prázdniny jsou na konci října.', grade: 2 },
-  { key: 'slunovrat', prompt: 'Ve kterém měsíci je nejkratší den v roce?', months: [11], mode: 'any', picture: ill('prvouka-mesic', '🌙', 'Měsíc'), hint: 'Zimní slunovrat je kolem 21. prosince – den je nejkratší a noc nejdelší.', grade: 2 },
-  { key: 'nejdelsi-den', prompt: 'Ve kterém měsíci je nejdelší den v roce?', months: [5], mode: 'any', picture: ill('prvouka-slunce', '☀️', 'Slunce'), hint: 'Letní slunovrat je kolem 21. června.', grade: 2 },
+  { key: 'slunovrat', prompt: 'Ve kterém měsíci je nejkratší den v roce?', months: [11], mode: 'any', picture: photo('mesic', 'Měsíc'), hint: 'Zimní slunovrat je kolem 21. prosince – den je nejkratší a noc nejdelší.', grade: 2 },
+  { key: 'nejdelsi-den', prompt: 'Ve kterém měsíci je nejdelší den v roce?', months: [5], mode: 'any', hint: 'Letní slunovrat je kolem 21. června.', grade: 2 },
 ];
 
 interface DayFact {
@@ -71,8 +72,8 @@ const DAY_FACTS: DayFact[] = [
   { key: 'vecere', prompt: 'Kdy večeříme?', parts: [4], mode: 'any', picture: ill('prvouka-vecere', '🍲', 'Večeře doma'), hint: 'Večeře je večer.' },
   { key: 'spime', prompt: 'Kdy spíme?', parts: [5], mode: 'any', picture: ill('prvouka-sleep', '😴', 'Spánek'), hint: 'Spíme v noci.' },
   { key: 'zuby', prompt: 'Kdy si čistíme zuby? Vyber obě části dne.', parts: [0, 4], mode: 'all', picture: ill('prvouka-zuby', '🪥', 'Čištění zubů'), hint: 'Zuby si čistíme ráno a večer.' },
-  { key: 'hvezdy', prompt: 'Kdy vidíme hvězdy a Měsíc?', parts: [5], mode: 'any', picture: ill('prvouka-mesic', '🌙', 'Měsíc'), hint: 'Hvězdy svítí v noci, když je tma.' },
-  { key: 'slunce-nejvys', prompt: 'Kdy je Slunce na obloze nejvýš?', parts: [2], mode: 'any', picture: ill('prvouka-slunce', '☀️', 'Slunce'), hint: 'V poledne je Slunce nejvýš.' },
+  { key: 'hvezdy', prompt: 'Kdy vidíme hvězdy a Měsíc?', parts: [5], mode: 'any', picture: photo('mesic', 'Měsíc'), hint: 'Hvězdy svítí v noci, když je tma.' },
+  { key: 'slunce-nejvys', prompt: 'Kdy je Slunce na obloze nejvýš?', parts: [2], mode: 'any', hint: 'V poledne je Slunce nejvýš.' },
   { key: 'netopyr', prompt: 'Kdy loví netopýr?', parts: [5], mode: 'any', picture: ill('prvouka-netopyr', '🦇', 'Netopýr'), hint: 'Netopýr je noční zvíře.' },
 ];
 
